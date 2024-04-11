@@ -31,7 +31,7 @@ const useTagsStore = create<TTagsStore>()(devtools((set) => ({
     tagsList: [...state.tagsList, tag]
   })),
   deleteTag: (tag) => set((state) => ({
-    tagsList: state.tagsList.filter(listTag => listTag !== tag)
+    tagsList: state.tagsList.filter(listTag => listTag.text !== tag)
   }))
 })));
 
