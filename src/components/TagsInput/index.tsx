@@ -4,7 +4,7 @@ import cx from 'classnames';
 import uuid from 'react-uuid';
 
 type TTagsInputProps = {
-  data: object[]
+  data: any[]
 }
 
 const TagsInput: FC<TTagsInputProps> = ({data}) => {
@@ -14,8 +14,8 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     if (e.target.value) {
       setSuggestions(
         data
-          .filter(item => (item.name.toLowerCase().includes(e.target.value)))
-          .filter(item => !tagsList.includes(item.name))
+          .filter((item: any) => (item.name.toLowerCase().includes(e.target.value)))
+          .filter((item: any) => !tagsList.includes(item.name))
       );
     } else if (!e.target.value) {
       setSuggestions([]);
