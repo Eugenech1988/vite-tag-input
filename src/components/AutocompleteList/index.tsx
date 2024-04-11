@@ -1,18 +1,21 @@
 import { FC } from 'react';
 import useTagsStore from '../../store';
+import { firstSpecialCharReg } from '../../utils';
 import uuid from 'react-uuid';
 
 const AutocompleteList: FC = () => {
-  const {searchString, addTag, setStringValue, setSuggestions, suggestions} = useTagsStore();
+  const {searchString, addTag, setStringValue, setSpecialCharacter, setSuggestions, suggestions, specialCharacter} = useTagsStore();
   if (!searchString) {
     return;
   }
+  // const firstSpecialChar = searchString.test(firstSpecialCharReg);
 
   const handleItemClick = (e: any) => {
     setStringValue('');
     setSuggestions([]);
 
-    addTag(e.target.children[0].innerText);
+    addTag({text: e.target.children[0].innerText, special: specialCharacter && specialCharacter});
+    setSpecialCharacter(null);
   };
   return (
     <>

@@ -1,5 +1,6 @@
 import { ChangeEvent, FC } from 'react';
 import useTagsStore from '../../store';
+import { firstSpecialCharReg } from '../../utils';
 import cx from 'classnames';
 import uuid from 'react-uuid';
 
@@ -8,16 +9,18 @@ type TTagsInputProps = {
 }
 
 const TagsInput: FC<TTagsInputProps> = ({data}) => {
-  const {tagsList, addTag, setStringValue, searchString, suggestions, setSuggestions, deleteTag} = useTagsStore();
+  const {tagsList, addTag, setStringValue, setSpecialCharacter, searchString, suggestions, setSuggestions, deleteTag} = useTagsStore();
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const specialChar = /[@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-    const specialIndex = e.target.value.search(specialChar);
-    const nextSubstring = e.target.value.substring(specialIndex + 1);
+    const nextSubstring = e.target.value.substring(1);
+    const firstSpecialChar = firstSpecialCharReg.test(e.target.value[0]);
+    if (firstSpecialChar) {
+      setSpecialCharacter(e.target.value[0])
+    }
     setStringValue(e.target.value);
     if (e.target.value) {
       setSuggestions(
         data
-          .filter((item: any) => (item.name.toLowerCase().includes((specialChar && specialIndex === 0 && nextSubstring !== '') ? nextSubstring : e.target.value)))
+          .filter((item: any) => (item.name.toLowerCase().includes((firstSpecialChar && nextSubstring !== '') ? nextSubstring : e.target.value)))
           .filter((item: any) => !tagsList.includes(item.name))
       );
     } else if (!e.target.value) {
@@ -30,7 +33,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
       if (tagsList.find(tag => tag === e.target.value) || e.target.value === '') {
         return;
       }
-      addTag(e.target.value);
+      addTag({text: e.target.value, special: null});
       setStringValue('');
       setSuggestions([]);
     }
@@ -47,9 +50,10 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     <div className={cx('tags-input-container', {'open': (suggestions.length > 0)})}>
       {(tagsList.length > 0) &&
         tagsList.map(tag => (
-          <div contentEditable>
-            <div contentEditable={false} className="tag-item" key={uuid()}>
-              <span className="text">{tag}</span>
+          <div contentEditable key={uuid()}>
+            {tag.special}
+            <div contentEditable={false} className="tag-item">
+              <span className="text">{tag.text}</span>
               <span className="close" onClick={handleTagDelete}>&times;</span>
             </div>
           </div>

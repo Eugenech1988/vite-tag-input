@@ -1,31 +1,31 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
-// type TSuggestion = {
-//   name: string,
-//   category: string,
-//   id: string
-// }
-
 type TTagsStore = {
   tagsList: any[],
   searchString: string,
   suggestions: any[],
+  specialCharacter: string | null,
   addTag: (tag: string) => void,
   deleteTag: (tag: string) => void,
   setStringValue: (stringValue: string) => void,
-  setSuggestions: (suggestions: string[]) => void
+  setSuggestions: (suggestions: string[]) => void,
+  setSpecialCharacter: (specialCharacter: string) => void
 }
 
 const useTagsStore = create<TTagsStore>()(devtools((set) => ({
   tagsList: [],
   searchString: '',
   suggestions: [],
+  specialCharacter: null,
   setStringValue: (stringValue) => set(() => ({
     searchString: stringValue
   })),
   setSuggestions: (suggestions) => set(() => ({
     suggestions: [...suggestions]
+  })),
+  setSpecialCharacter: (specialCharacter) => set(() => ({
+    specialCharacter
   })),
   addTag: (tag) => set((state) => ({
     tagsList: [...state.tagsList, tag]
