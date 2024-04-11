@@ -33,7 +33,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
       if (tagsList.find(tag => tag === e.target.value) || e.target.value === '') {
         return;
       }
-      addTag({text: e.target.value, special: null});
+      addTag({text: e.target.value, special: ''});
       setStringValue('');
       setSuggestions([]);
     }

@@ -6,7 +6,7 @@ type TTagsStore = {
   searchString: string,
   suggestions: any[],
   specialCharacter: string | null,
-  addTag: (tag: string) => void,
+  addTag: (tag: object) => void,
   deleteTag: (tag: string) => void,
   setStringValue: (stringValue: string) => void,
   setSuggestions: (suggestions: string[]) => void,
@@ -17,7 +17,7 @@ const useTagsStore = create<TTagsStore>()(devtools((set) => ({
   tagsList: [],
   searchString: '',
   suggestions: [],
-  specialCharacter: null,
+  specialCharacter: '',
   setStringValue: (stringValue) => set(() => ({
     searchString: stringValue
   })),
