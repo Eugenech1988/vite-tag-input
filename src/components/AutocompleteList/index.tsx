@@ -9,10 +9,9 @@ const AutocompleteList: FC = () => {
   }
 
   const handleItemClick = (e: any) => {
+    addTag({text: e.target.children[0].innerText, special: specialCharacter && specialCharacter});
     setStringValue('');
     setSuggestions([]);
-
-    addTag({text: e.target.children[0].innerText, special: specialCharacter && specialCharacter});
     setSpecialCharacter('');
   };
   return (

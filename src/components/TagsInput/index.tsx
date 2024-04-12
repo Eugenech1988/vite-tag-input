@@ -9,7 +9,16 @@ type TTagsInputProps = {
 }
 
 const TagsInput: FC<TTagsInputProps> = ({data}) => {
-  const {tagsList, addTag, setStringValue, setSpecialCharacter, searchString, suggestions, setSuggestions, deleteTag} = useTagsStore();
+  const {
+    tagsList,
+    addTag,
+    setStringValue,
+    setSpecialCharacter,
+    searchString,
+    suggestions,
+    setSuggestions,
+    deleteTag
+  } = useTagsStore();
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const nextSubstring = e.target.value.substring(1);
     const firstSpecialChar = firstSpecialCharReg.test(e.target.value[0]);
@@ -21,7 +30,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
       setSuggestions(
         data
           .filter((item: any) => (item.name.toLowerCase().includes((firstSpecialChar && nextSubstring !== '') ? nextSubstring : e.target.value)))
-          .filter((item: any) => !tagsList.includes(item.name))
+          .filter((item: any) => !tagsList.some(tag => tag.text === item.name))
       );
     } else if (!e.target.value) {
       setSuggestions([]);
@@ -30,7 +39,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
 
   const handleKeyPress = (e: any) => {
     if (e.key === 'Enter') {
-      if (tagsList.find(tag => tag === e.target.value) || e.target.value === '') {
+      if (tagsList.find(tag => tag.text === e.target.value) || e.target.value === '') {
         return;
       }
       addTag({text: e.target.value, special: ''});
