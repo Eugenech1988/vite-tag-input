@@ -47,35 +47,28 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
     if (e.key === 'Enter' && searchString.trim() !== '' && !tagsList.some(tag => tag.text === searchString)) {
       const firstChar = searchString[0] || '';
 
-      let textToAdd = '';
-      let specialChars = '';
+      let textToAdd;
+      let specialChars;
 
-      // Проверка на букву (латинская или кириллическая)
       if (/^[a-zA-Zа-яА-ЯЁё]/.test(firstChar)) {
-        textToAdd = searchString;  // Тег идет с полным текстом
-        specialChars = '';         // Спецсимволов нет
+        textToAdd = searchString;
+        specialChars = '';
       } else {
-        // Если строка начинается с чисел или спецсимволов
         const firstLetterIndex = searchString.search(/[a-zA-Zа-яА-ЯЁё]/);  // Индекс первой буквы
 
         if (firstLetterIndex > -1) {
-          // Спецсимволы до первой буквы
           specialChars = searchString.slice(0, firstLetterIndex);
-          // Все, что идет после первой буквы
           textToAdd = searchString.slice(firstLetterIndex);
         } else {
-          // Если букв нет, создаем только спецсимволы
           specialChars = searchString;
-          textToAdd = '';  // Тег не создается
+          textToAdd = '';
         }
       }
 
-      // Если есть текст, создаем тег
       if (textToAdd) {
         addTag({ text: textToAdd, special: specialChars });
       }
 
-      // Сбрасываем значения после добавления тега
       setStringValue('');
       setSuggestions([]);
       setSpecialCharacter('');
