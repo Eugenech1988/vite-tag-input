@@ -1,11 +1,10 @@
-import { ChangeEvent, FC } from 'react';
-import useTagsStore from '../../store';
+import { ChangeEvent, FC, KeyboardEvent } from 'react';
+import useTagsStore, { TSuggestion } from '../../store';
 import { firstSpecialCharReg } from '../../utils';
 import cx from 'classnames';
-import uuid from 'react-uuid';
 
 type TTagsInputProps = {
-  data: any[]
+  data: TSuggestion[]
 }
 
 const TagsInput: FC<TTagsInputProps> = ({data}) => {
@@ -20,56 +19,55 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     deleteTag
   } = useTagsStore();
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const nextSubstring = e.target.value.substring(1);
-    const firstSpecialChar = firstSpecialCharReg.test(e.target.value[0]);
-    if (firstSpecialChar) {
-      setSpecialCharacter(e.target.value[0])
-    }
-    setStringValue(e.target.value);
-    if (e.target.value) {
-      setSuggestions(
-        data
-          .filter((item: any) => (item.name.toLowerCase().includes((firstSpecialChar && nextSubstring !== '') ? nextSubstring : e.target.value)))
-          .filter((item: any) => !tagsList.some(tag => tag.text === item.name))
-      );
-    } else if (!e.target.value) {
-      setSuggestions([]);
-    }
+    const {value} = e.target;
+    const firstChar = value[0] || '';
+    const firstSpecialChar = firstSpecialCharReg.test(firstChar);
+    const searchText = firstSpecialChar ? value.slice(1) : value;
+
+    if (firstSpecialChar) setSpecialCharacter(firstChar);
+    setStringValue(value);
+
+    setSuggestions(
+      value
+        ? data.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+            !tagsList.some((tag) => tag.text === item.name)
+        )
+        : []
+    );
   };
 
-  const handleKeyPress = (e: any) => {
-    if (e.key === 'Enter') {
-      if (tagsList.find(tag => tag.text === e.target.value) || e.target.value === '') {
-        return;
-      }
-      addTag({text: e.target.value, special: ''});
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchString.trim() !== '' && !tagsList.some(tag => tag.text === searchString)) {
+      addTag({text: searchString, special: ''});
       setStringValue('');
       setSuggestions([]);
     }
+
+    if (e.key === 'Backspace' && searchString === '' && tagsList.length) {
+      deleteTag(tagsList[tagsList.length - 1].text);
+    }
   };
 
-  const handleTagDelete = (e: any) => {
-    const tagToDelete = e.target.previousSibling.innerHTML;
-    if (tagToDelete) {
-      deleteTag(tagToDelete);
-    }
+  const handleTagDelete = (text: string) => () => {
+    deleteTag(text);
   };
 
   return (
     <div className={cx('tags-input-container', {'open': (suggestions.length > 0)})}>
-      {(tagsList.length > 0) &&
-        tagsList.map(tag => (
-          <div contentEditable key={uuid()}>
-            {tag.special}
-            <div contentEditable={false} className="tag-item">
-              <span className="text">{tag.text}</span>
-              <span className="close" onClick={handleTagDelete}>&times;</span>
-            </div>
+      {tagsList.map(({text, special}) => (
+        <div contentEditable key={text} className="tag-wrapper">
+          {special}
+          <div contentEditable className="tag-item">
+            <span className="text">{text}</span>
+            <span className="close" onClick={handleTagDelete(text)}>&times;</span>
           </div>
-        ))}
+        </div>
+      ))}
       <input
         onChange={handleChange}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyDown}
         type="text"
         value={searchString}
         className="tags-input"

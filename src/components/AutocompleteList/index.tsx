@@ -8,8 +8,8 @@ const AutocompleteList: FC = () => {
     return;
   }
 
-  const handleItemClick = (e: any) => {
-    addTag({text: e.target.children[0].innerText, special: specialCharacter && specialCharacter});
+  const handleItemClick = (text: string) => ()=> {
+    addTag({ text, special: specialCharacter || '' });
     setStringValue('');
     setSuggestions([]);
     setSpecialCharacter('');
@@ -19,7 +19,7 @@ const AutocompleteList: FC = () => {
       {suggestions.length > 0 &&
         <ul className="autocomplete-list">
           {suggestions.map(item =>
-            <li className="autocomplete-list-item" onClick={handleItemClick} key={uuid()}>
+            <li className="autocomplete-list-item" onClick={handleItemClick(item.name)} key={uuid()}>
               <span className='autocomplete-list-item-name'>{item.name}</span>
               <span className='autocomplete-list-item-category'>{item.category}</span>
             </li>
