@@ -1,12 +1,16 @@
 import dotenv from 'dotenv';
 import { defineConfig } from 'vite';
-import path from 'path';
 import react from '@vitejs/plugin-react-swc';
+import path from 'path';
 
 // run package config
 dotenv.config();
-// https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
   plugins: [react()],
 // define process env
   define: {

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import useTagsStore from '../../store';
+import useTagsStore from '@/store';
 import uuid from 'react-uuid';
 
 const AutocompleteList: FC = () => {

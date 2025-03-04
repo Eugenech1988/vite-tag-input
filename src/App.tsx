@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import TagsInput from './components/TagsInput';
-import AutocompleteList from './components/AutocompleteList';
-import useTagsStore from './store';
+import AutocompleteList from '@/components/AutocompleteList';
+import useTagsStore from '@/store';
 import { useQuery } from '@tanstack/react-query';
-import { fetchAutocomplete } from './api';
+import { fetchAutocomplete } from '@/api';
 
 const App: FC = () => {
   const {tagsList} = useTagsStore();

@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, KeyboardEvent } from 'react';
-import useTagsStore, { TSuggestion } from '../../store';
-import { firstSpecialCharReg } from '../../utils';
+import useTagsStore, { TSuggestion } from '@/store';
+import { firstSpecialCharReg } from '@/utils';
 import cx from 'classnames';
 
 type TTagsInputProps = {
@@ -54,12 +54,20 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     deleteTag(text);
   };
 
+  const handleTagClick = () => {
+    // e.preventDefault();
+    console.log('tag clicked');
+    // setStringValue('');
+    // setSuggestions([]);
+    // addTag({text, special: ''});
+  };
+
   return (
     <div className={cx('tags-input-container', {'open': (suggestions.length > 0)})}>
       {tagsList.map(({text, special}) => (
         <div contentEditable key={text} className="tag-wrapper">
           {special}
-          <div contentEditable className="tag-item">
+          <div contentEditable className="tag-item" onClick={handleTagClick}>
             <span className="text">{text}</span>
             <span className="close" onClick={handleTagDelete(text)}>&times;</span>
           </div>
