@@ -22,7 +22,6 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     const firstChar = value[0] || '';
-    const searchText = value;
 
     const specialChars = extractSpecialCharacters(value);
 
@@ -36,7 +35,7 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
       value
         ? data.filter(
           (item) =>
-            item.name.toLowerCase().includes(searchText.toLowerCase()) &&
+            item.name.toLowerCase().includes(value.toLowerCase()) &&
             !tagsList.some((tag) => tag.text === item.name)
         )
         : []
@@ -54,7 +53,7 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
         textToAdd = searchString;
         specialChars = '';
       } else {
-        const firstLetterIndex = searchString.search(/[a-zA-Zа-яА-ЯЁё]/);  // Индекс первой буквы
+        const firstLetterIndex = searchString.search(/[a-zA-Zа-яА-ЯЁё]/);
 
         if (firstLetterIndex > -1) {
           specialChars = searchString.slice(0, firstLetterIndex);
@@ -92,16 +91,16 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
     deleteTag(text);
   };
 
-  const handleTagClick = () => {
-    console.log('tag clicked');
+  const handleTagClick = (text: string, special: string, value: string | number) => () => {
+    console.log('tag clicked', text, special, value);
   };
 
   return (
     <div className={cx('tags-input-container', { 'open': suggestions.length > 0 })}>
-      {tagsList.map(({ text, special }) => (
+      {tagsList.map(({ text, special, }) => (
         <div contentEditable key={text} className="tag-wrapper">
           {special}
-          <div contentEditable className="tag-item" onClick={handleTagClick}>
+          <div contentEditable className="tag-item" onClick={handleTagClick(text, special, 'value')}>
             <span className="text">{text}</span>
             <span className="close" onClick={handleTagDelete(text)}>&times;</span>
           </div>
