@@ -1,9 +1,8 @@
-import { FC, useId } from 'react';
+import { FC } from 'react';
 import useTagsStore from '@/store';
 import { extractSpecialCharacters } from '@/utils';
 
 const AutocompleteList: FC = () => {
-  const listId = useId();
   const {
     searchString,
     addTag,
@@ -31,7 +30,7 @@ const AutocompleteList: FC = () => {
       {suggestions.length > 0 && (
         <ul className="autocomplete-list">
           {suggestions.map((item) => (
-            <li className="autocomplete-list-item" onClick={handleItemClick(item.name)} key={listId}>
+            <li className="autocomplete-list-item" onClick={handleItemClick(item.name)}>
               <span className="autocomplete-list-item-name">{item.name}</span>
               <span className="autocomplete-list-item-value">{item.value}</span>
               <span className="autocomplete-list-item-category">{item.category}</span>
