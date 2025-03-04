@@ -29,7 +29,7 @@ const useTagsStore = create<TTagsStore>()(devtools((set) => ({
   suggestions: [],
   specialCharacter: '',
   setStringValue: (stringValue) => set({searchString: stringValue}),
-  setSuggestions: (suggestions) => set({suggestions: [...suggestions]}),
+  setSuggestions: (suggestions: TSuggestion[]) => set({suggestions}),
   setSpecialCharacter: (specialCharacter) => set({specialCharacter}),
   addTag: (tag) => set((state) => ({tagsList: [...state.tagsList, tag]})),
   deleteTag: (tag) => set((state) => ({
