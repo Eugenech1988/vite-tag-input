@@ -30,7 +30,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     setSuggestions(
       value
         ? data.filter(
-          (item): item is TSuggestion =>
+          (item) =>
             item.name.toLowerCase().includes(searchText.toLowerCase()) &&
             !tagsList.some((tag) => tag.text === item.name)
         )

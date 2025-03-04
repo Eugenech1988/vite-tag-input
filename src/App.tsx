@@ -22,7 +22,7 @@ const App: FC = () => {
       <span>{`Tags count: ${tagsList.length}`}</span>
       <div className="autocomplete-wrapper">
         <AutocompleteList/>
-        <TagsInput data={data as object[]}/>
+        <TagsInput data={data}/>
       </div>
     </>
   );
