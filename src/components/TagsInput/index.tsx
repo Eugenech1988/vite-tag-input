@@ -1,13 +1,13 @@
 import { ChangeEvent, FC, KeyboardEvent } from 'react';
 import useTagsStore, { TSuggestion } from '@/store';
-import { firstSpecialCharReg } from '@/utils';
+import { extractSpecialCharacters } from '@/utils';
 import cx from 'classnames';
 
 type TTagsInputProps = {
-  data: TSuggestion[]
-}
+  data: TSuggestion[];
+};
 
-const TagsInput: FC<TTagsInputProps> = ({data}) => {
+const TagsInput: FC<TTagsInputProps> = ({ data }) => {
   const {
     tagsList,
     addTag,
@@ -18,13 +18,18 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     setSuggestions,
     deleteTag
   } = useTagsStore();
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const {value} = e.target;
-    const firstChar = value[0] || '';
-    const firstSpecialChar = firstSpecialCharReg.test(firstChar);
-    const searchText = firstSpecialChar ? value.slice(1) : value;
 
-    if (firstSpecialChar) setSpecialCharacter(firstChar);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const firstChar = value[0] || '';
+    const searchText = value;
+
+    const specialChars = extractSpecialCharacters(value);
+
+    if (!suggestions.length && firstChar && !/[a-zA-Z]/.test(firstChar)) {
+      setSpecialCharacter(specialChars);
+    }
+
     setStringValue(value);
 
     setSuggestions(
@@ -40,13 +45,53 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && searchString.trim() !== '' && !tagsList.some(tag => tag.text === searchString)) {
-      addTag({text: searchString, special: ''});
+      const firstChar = searchString[0] || '';
+
+      let textToAdd = '';
+      let specialChars = '';
+
+      // Проверка на букву (латинская или кириллическая)
+      if (/^[a-zA-Zа-яА-ЯЁё]/.test(firstChar)) {
+        textToAdd = searchString;  // Тег идет с полным текстом
+        specialChars = '';         // Спецсимволов нет
+      } else {
+        // Если строка начинается с чисел или спецсимволов
+        const firstLetterIndex = searchString.search(/[a-zA-Zа-яА-ЯЁё]/);  // Индекс первой буквы
+
+        if (firstLetterIndex > -1) {
+          // Спецсимволы до первой буквы
+          specialChars = searchString.slice(0, firstLetterIndex);
+          // Все, что идет после первой буквы
+          textToAdd = searchString.slice(firstLetterIndex);
+        } else {
+          // Если букв нет, создаем только спецсимволы
+          specialChars = searchString;
+          textToAdd = '';  // Тег не создается
+        }
+      }
+
+      // Если есть текст, создаем тег
+      if (textToAdd) {
+        addTag({ text: textToAdd, special: specialChars });
+      }
+
+      // Сбрасываем значения после добавления тега
       setStringValue('');
       setSuggestions([]);
+      setSpecialCharacter('');
     }
 
     if (e.key === 'Backspace' && searchString === '' && tagsList.length) {
-      deleteTag(tagsList[tagsList.length - 1].text);
+      const lastTag = tagsList[tagsList.length - 1];
+      e.preventDefault();
+
+      if (lastTag.special) {
+          setStringValue(lastTag.special);
+      } else {
+        setStringValue('');
+      }
+
+      deleteTag(lastTag.text);
     }
   };
 
@@ -55,16 +100,12 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
   };
 
   const handleTagClick = () => {
-    // e.preventDefault();
     console.log('tag clicked');
-    // setStringValue('');
-    // setSuggestions([]);
-    // addTag({text, special: ''});
   };
 
   return (
-    <div className={cx('tags-input-container', {'open': (suggestions.length > 0)})}>
-      {tagsList.map(({text, special}) => (
+    <div className={cx('tags-input-container', { 'open': suggestions.length > 0 })}>
+      {tagsList.map(({ text, special }) => (
         <div contentEditable key={text} className="tag-wrapper">
           {special}
           <div contentEditable className="tag-item" onClick={handleTagClick}>

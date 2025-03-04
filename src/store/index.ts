@@ -8,7 +8,8 @@ type TTag = {
 
 export type TSuggestion = {
   name: string,
-  category: string
+  category: string,
+  value?: string
 }
 
 type TTagsStore = {

@@ -8,7 +8,7 @@ import { fetchAutocomplete } from '@/api';
 const App: FC = () => {
   const {tagsList} = useTagsStore();
   const {isPending, isError, data, error} = useQuery({
-    queryKey: ['todos'],
+    queryKey: ['autocomplete'],
     queryFn: fetchAutocomplete
   });
   if (isPending) {
