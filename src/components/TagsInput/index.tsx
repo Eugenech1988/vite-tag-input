@@ -90,7 +90,6 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
 
     if(e.key === 'ArrowDown') {
       const target = e.target as HTMLElement;
-      console.log(target.parentElement?.previousElementSibling?.childNodes[0]);
       const listIem = target.parentElement?.previousElementSibling?.childNodes[0] as HTMLElement;
       if (listIem) listIem.focus();
     }
