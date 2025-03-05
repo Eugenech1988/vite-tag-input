@@ -55,11 +55,13 @@ const AutocompleteList: FC = () => {
     if (e.key === 'Enter') {
       const target = e.target as HTMLInputElement;
       target.click();
+      const input = target.parentElement?.nextElementSibling?.childNodes[tagsList.length] as HTMLInputElement;
+      if (input) input.focus();
     }
 
     if (e.key === 'Escape') {
       const target = e.target as HTMLInputElement;
-      const input = target.parentElement?.nextElementSibling?.childNodes[0] as HTMLInputElement;
+      const input = target.parentElement?.nextElementSibling?.childNodes[tagsList.length] as HTMLInputElement;
       if (input) input.focus();
     }
   };
