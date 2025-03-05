@@ -65,9 +65,9 @@ const AutocompleteList: FC = () => {
           {suggestions.map((item, index) => (
             <li
               onKeyDown={handleKeyDown}
+              key={listId}
               tabIndex={index}
               className="autocomplete-list-item"
-              key={item.value}
               onClick={handleItemClick(item.name, item.value)}
             >
               <span className="autocomplete-list-item-name">{item.name}</span>
