@@ -51,6 +51,11 @@ const AutocompleteList: FC = () => {
         prevItem.focus();
       }
     }
+
+    if (e.key === 'Enter') {
+      const target = e.target as HTMLInputElement;
+      target.click();
+    }
   };
 
   return (
@@ -65,23 +70,6 @@ const AutocompleteList: FC = () => {
               key={item.value}
               onClick={handleItemClick(item.name, item.value)}
             >
-              <span className="autocomplete-list-item-name">{item.name}</span>
-              <span className="autocomplete-list-item-value">{item.value}</span>
-              <span className="autocomplete-list-item-category">{item.category}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
-  );
-
-
-  return (
-    <>
-      {suggestions.length > 0 && (
-        <ul className="autocomplete-list">
-          {suggestions.map((item, index: number) => (
-            <li onKeyDown={handleKeyDown} tabIndex={index} className="autocomplete-list-item" key={listId} onClick={handleItemClick(item.name, item.value)}>
               <span className="autocomplete-list-item-name">{item.name}</span>
               <span className="autocomplete-list-item-value">{item.value}</span>
               <span className="autocomplete-list-item-category">{item.category}</span>
