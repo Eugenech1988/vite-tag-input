@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, KeyboardEvent } from 'react';
-import useTagsStore, { TSuggestion } from '@/store';
+import useTagsStore, { TSuggestion, TTag } from '@/store';
 import { extractSpecialCharacters } from '@/utils';
 import cx from 'classnames';
 
@@ -7,7 +7,7 @@ type TTagsInputProps = {
   data: TSuggestion[];
 };
 
-const TagsInput: FC<TTagsInputProps> = ({ data }) => {
+const TagsInput: FC<TTagsInputProps> = ({data}) => {
   const {
     tagsList,
     addTag,
@@ -15,12 +15,15 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
     setSpecialCharacter,
     searchString,
     suggestions,
+    editFinalTag,
     setSuggestions,
-    deleteTag
+    deleteTag,
+    setSuggestTags,
+    suggestTags
   } = useTagsStore();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
+    const {value} = e.target;
     const firstChar = value[0] || '';
 
     const specialChars = extractSpecialCharacters(value);
@@ -65,7 +68,7 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
       }
 
       if (textToAdd) {
-        addTag({ text: textToAdd, special: specialChars });
+        addTag({text: textToAdd, special: specialChars});
       }
 
       setStringValue('');
@@ -78,7 +81,7 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
       e.preventDefault();
 
       if (lastTag.special) {
-          setStringValue(lastTag.special);
+        setStringValue(lastTag.special);
       } else {
         setStringValue('');
       }
@@ -88,24 +91,62 @@ const TagsInput: FC<TTagsInputProps> = ({ data }) => {
   };
 
   const handleTagDelete = (text: string) => () => {
+    setTimeout(() => {setSuggestTags([])}, 0);
     deleteTag(text);
   };
 
-  const handleTagClick = (text: string, special: string, value: string | number) => () => {
-    console.log('tag clicked', text, special, value);
+  const handleTagClick = (tagValue: string | number | undefined, special: string, text: string) => () => {
+    const strTagValue = tagValue?.toString().toLowerCase();
+
+    if (!strTagValue) return;
+
+    const matchingTags = data.filter(item => item.value?.toString().toLowerCase() === strTagValue);
+
+    if (matchingTags.length === 0) return;
+
+    const transformedTags: TTag[] = matchingTags.map(item => ({
+      text: item.name,
+      special,
+      tagValue: item.value
+    }));
+
+    const filteredTags = transformedTags.filter(tag => tag.text !== text);
+
+    setSuggestTags(filteredTags);
   };
 
+  const handleSuggestTagClick = (tagValue: string | number | undefined, text: string, special: string) => () => {
+      editFinalTag({text, special, tagValue});
+      setSuggestTags([]);
+    };
+
+
   return (
-    <div className={cx('tags-input-container', { 'open': suggestions.length > 0 })}>
-      {tagsList.map(({ text, special, }) => (
-        <div contentEditable key={text} className="tag-wrapper">
-          {special}
-          <div contentEditable className="tag-item" onClick={handleTagClick(text, special, 'value')}>
-            <span className="text">{text}</span>
-            <span className="close" onClick={handleTagDelete(text)}>&times;</span>
+    <div className={cx('tags-input-container', {'open': suggestions.length > 0})}>
+      {tagsList.map(({ text, special, tagValue }) => {
+        const isLastTag = text === tagsList[tagsList.length - 1]?.text;
+
+        return (
+          <div key={text} className={cx('tag-wrapper', { 'final': isLastTag })}>
+            {special && <span contentEditable className="tag-item-special">{special}</span>}
+
+            <div className="tag-item" onClick={handleTagClick(tagValue, special, text)}>
+              <span className="text">{text}</span>
+              {isLastTag && <span className="close" onClick={handleTagDelete(text)}>&times;</span>}
+            </div>
+
+            {isLastTag && (
+              <div className="suggest-tags">
+                {suggestTags.map(({ tagValue, text, special }) => (
+                  <div key={tagValue} className="tag-item" onClick={handleSuggestTagClick(tagValue, text, special)}>
+                    <span className="text">{text}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
       <input
         onChange={handleChange}
         onKeyDown={handleKeyDown}

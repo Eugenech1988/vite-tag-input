@@ -5,6 +5,11 @@
 html, body{
   height: 100%;
 }
+
+input:focus {
+  outline: none;
+}
+
 body{
   display: flex;
   justify-content: center;
@@ -85,10 +90,40 @@ body{
 
 .tag-item{
   background-color: rgb(218, 216, 216);
+  border: 1px solid rgb(218, 216, 216);
   display: inline-block;
   padding: .5em .75em;
   border-radius: 20px;
 }
+
+.tag-wrapper {
+  position: relative;
+  pointer-events: none;
+}
+
+.tag-wrapper.final .tag-item {
+  background-color: white;
+  border: 1px solid #000;
+  cursor: pointer;
+  pointer-events: initial;
+}
+
+.suggest-tags {
+    position: absolute;
+    width: 100%;
+    top: calc(100% + 5px);
+    left: 0;
+}
+
+.suggest-tags .tag-item {
+  width: calc(100% - 24px);
+}
+
+.tag-item-special{
+  line-height: 38px;
+  margin-right: .5em;
+}
+
 .tag-item .close{
   height: 20px;
   width: 20px;
