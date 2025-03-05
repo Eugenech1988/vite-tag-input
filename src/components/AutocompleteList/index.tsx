@@ -1,4 +1,4 @@
-import { FC, useId } from 'react';
+import { FC, useId, KeyboardEvent } from 'react';
 import useTagsStore from '@/store';
 import { extractSpecialCharacters } from '@/utils';
 
@@ -28,12 +28,60 @@ const AutocompleteList: FC = () => {
     setSpecialCharacter(specialChars);
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLLIElement>) => {
+    const target = e.target as HTMLElement;
+
+    const parentList = target.parentElement as HTMLElement;
+    if (!parentList) return;
+
+    const listItems = parentList.childNodes;
+
+    const currentIndex = Array.from(listItems).indexOf(target);
+
+    if (e.key === 'ArrowDown') {
+      if (currentIndex < listItems.length - 1) {
+        const nextItem = listItems[currentIndex + 1] as HTMLElement;
+        nextItem.focus();
+      }
+    }
+
+    if (e.key === 'ArrowUp') {
+      if (currentIndex > 0) {
+        const prevItem = listItems[currentIndex - 1] as HTMLElement;
+        prevItem.focus();
+      }
+    }
+  };
+
   return (
     <>
       {suggestions.length > 0 && (
         <ul className="autocomplete-list">
-          {suggestions.map((item) => (
-            <li className="autocomplete-list-item" key={listId} onClick={handleItemClick(item.name, item.value)}>
+          {suggestions.map((item, index) => (
+            <li
+              onKeyDown={handleKeyDown}
+              tabIndex={index}
+              className="autocomplete-list-item"
+              key={item.value}
+              onClick={handleItemClick(item.name, item.value)}
+            >
+              <span className="autocomplete-list-item-name">{item.name}</span>
+              <span className="autocomplete-list-item-value">{item.value}</span>
+              <span className="autocomplete-list-item-category">{item.category}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
+  );
+
+
+  return (
+    <>
+      {suggestions.length > 0 && (
+        <ul className="autocomplete-list">
+          {suggestions.map((item, index: number) => (
+            <li onKeyDown={handleKeyDown} tabIndex={index} className="autocomplete-list-item" key={listId} onClick={handleItemClick(item.name, item.value)}>
               <span className="autocomplete-list-item-name">{item.name}</span>
               <span className="autocomplete-list-item-value">{item.value}</span>
               <span className="autocomplete-list-item-category">{item.category}</span>

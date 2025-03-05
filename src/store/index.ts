@@ -18,14 +18,12 @@ type TTagsStore = {
   searchString: string;
   suggestions: TSuggestion[];
   specialCharacter: string | null;
-  suggestTags: TTag[];
   addTag: (tag: TTag) => void;
   deleteTag: (tag: string) => void;
   editFinalTag: (newTag: TTag) => void;
   setStringValue: (stringValue: string) => void;
   setSuggestions: (suggestions: TSuggestion[]) => void;
   setSpecialCharacter: (specialCharacter: string) => void;
-  setSuggestTags: (suggestTags: TTag[]) => void;
 };
 
 const useTagsStore = create<TTagsStore>()(
@@ -34,11 +32,9 @@ const useTagsStore = create<TTagsStore>()(
     searchString: '',
     suggestions: [],
     specialCharacter: '',
-    suggestTags: [],
     setStringValue: (stringValue) => set({ searchString: stringValue }),
     setSuggestions: (suggestions) => set({ suggestions }),
     setSpecialCharacter: (specialCharacter) => set({ specialCharacter }),
-    setSuggestTags: (tags: TTag[]) => set({ suggestTags: tags }),
     addTag: (tag) => set((state) => ({ tagsList: [...state.tagsList, tag] })),
     deleteTag: (tag) =>
       set((state) => ({
