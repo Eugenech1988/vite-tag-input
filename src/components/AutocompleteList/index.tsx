@@ -1,4 +1,5 @@
 import { FC, useId, KeyboardEvent } from 'react';
+import { motion } from 'framer-motion';
 import useTagsStore from '@/store';
 import { extractSpecialCharacters } from '@/utils';
 
@@ -10,6 +11,7 @@ const AutocompleteList: FC = () => {
     setStringValue,
     setSpecialCharacter,
     setSuggestions,
+    setSuggestedTags,
     suggestions,
     tagsList
   } = useTagsStore();
@@ -21,7 +23,6 @@ const AutocompleteList: FC = () => {
   const handleItemClick = (text: string, tagValue: string | number) => () => {
     const specialChars = extractSpecialCharacters(searchString);
     addTag({ text, special: specialChars, tagValue });
-    console.log(tagsList);
 
     setStringValue('');
     setSuggestions([]);
@@ -53,6 +54,7 @@ const AutocompleteList: FC = () => {
     }
 
     if (e.key === 'Enter') {
+      setSuggestedTags([]);
       const target = e.target as HTMLInputElement;
       target.click();
       const input = target.parentElement?.nextElementSibling?.childNodes[tagsList.length] as HTMLInputElement;
@@ -69,7 +71,13 @@ const AutocompleteList: FC = () => {
   return (
     <>
       {suggestions.length > 0 && (
-        <ul className="autocomplete-list">
+        <motion.ul className="autocomplete-list"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          aria-expanded={suggestions.length > 0}
+          exit={{ opacity: 0 }}
+        >
           {suggestions.map((item, index) => (
             <li
               onKeyDown={handleKeyDown}
@@ -83,7 +91,7 @@ const AutocompleteList: FC = () => {
               <span className="autocomplete-list-item-category">{item.category}</span>
             </li>
           ))}
-        </ul>
+        </motion.ul>
       )}
     </>
   );

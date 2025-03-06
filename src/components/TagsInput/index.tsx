@@ -1,6 +1,7 @@
-import { ChangeEvent, FC, KeyboardEvent, useState } from 'react';
+import { ChangeEvent, FC, KeyboardEvent } from 'react';
 import useTagsStore, { TSuggestion, TTag } from '@/store';
 import { extractSpecialCharacters } from '@/utils';
+import { motion } from 'framer-motion';
 import cx from 'classnames';
 
 type TTagsInputProps = {
@@ -8,7 +9,6 @@ type TTagsInputProps = {
 };
 
 const TagsInput: FC<TTagsInputProps> = ({data}) => {
-  const [suggestTags, setSuggestTags] = useState<TTag[]>([]);
   const {
     tagsList,
     addTag,
@@ -16,8 +16,10 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     setSpecialCharacter,
     searchString,
     suggestions,
+    suggestedTags,
     editFinalTag,
     setSuggestions,
+    setSuggestedTags,
     deleteTag,
   } = useTagsStore();
 
@@ -42,6 +44,8 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
         )
         : []
     );
+
+    setSuggestedTags([]);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -89,6 +93,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
     }
 
     if(e.key === 'ArrowDown') {
+      e.preventDefault();
       const target = e.target as HTMLElement;
       const listIem = target.parentElement?.previousElementSibling?.childNodes[0] as HTMLElement;
       if (listIem) listIem.focus();
@@ -96,7 +101,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
   };
 
   const handleTagDelete = (text: string) => () => {
-    setTimeout(() => {setSuggestTags([])}, 0);
+    setTimeout(() => {setSuggestedTags([])}, 0);
     deleteTag(text);
   };
 
@@ -117,12 +122,12 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
 
     const filteredTags = transformedTags.filter(tag => tag.text !== text);
 
-    setSuggestTags(filteredTags);
+    setSuggestedTags(filteredTags);
   };
 
   const handleSuggestTagClick = (tagValue: string | number | undefined, text: string, special: string) => () => {
       editFinalTag({text, special, tagValue});
-      setSuggestTags([]);
+      setSuggestedTags([]);
     };
 
   return (
@@ -140,13 +145,19 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
             </div>
 
             {isLastTag && (
-              <div className="suggest-tags">
-                {suggestTags.map(({ tagValue, text, special }) => (
-                  <div key={tagValue} className="tag-item" onClick={handleSuggestTagClick(tagValue, text, special)}>
+              <motion.div className="suggest-tags">
+                {suggestedTags.map(({ tagValue, text, special }) => (
+                  <motion.div key={tagValue} className="tag-item" onClick={handleSuggestTagClick(tagValue, text, special)}
+                    initial={{opacity: 0, y: 3}}
+                    animate={{opacity: 1, y: 0}}
+                    transition={{duration: 0.3}}
+                    aria-expanded={suggestions.length > 0}
+                    exit={{opacity: 0}}
+                  >
                     <span className="text">{text}</span>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         );
