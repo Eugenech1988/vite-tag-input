@@ -146,11 +146,11 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
 
             {isLastTag && (
               <div className="suggest-tags">
-                {suggestedTags.map(({ tagValue, text, special }) => (
+                {suggestedTags.map(({ tagValue, text, special }, index) => (
                   <motion.div key={tagValue} className="tag-item" onClick={handleSuggestTagClick(tagValue, text, special)}
                     initial={{opacity: 0, y: 3}}
                     animate={{opacity: 1, y: 0}}
-                    transition={{duration: 0.3}}
+                    transition={{duration: 0.3, delay: index * 0.01}}
                     aria-expanded={suggestions.length > 0}
                     exit={{opacity: 0}}
                   >
