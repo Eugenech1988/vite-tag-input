@@ -145,7 +145,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
             </div>
 
             {isLastTag && (
-              <motion.div className="suggest-tags">
+              <div className="suggest-tags">
                 {suggestedTags.map(({ tagValue, text, special }) => (
                   <motion.div key={tagValue} className="tag-item" onClick={handleSuggestTagClick(tagValue, text, special)}
                     initial={{opacity: 0, y: 3}}
@@ -157,7 +157,7 @@ const TagsInput: FC<TTagsInputProps> = ({data}) => {
                     <span className="text">{text}</span>
                   </motion.div>
                 ))}
-              </motion.div>
+              </div>
             )}
           </div>
         );
